@@ -1,7 +1,9 @@
 import React, { Profiler } from 'react'
 import { assets } from '../assets/assets'
+import {useNavigate} from 'react-router-dom'
 
 const Footer = () => {
+  const navigate = useNavigate()
   return (
     <div className='md:mx-10'>
 
@@ -18,10 +20,10 @@ const Footer = () => {
       <div>
         <p className='text-xl font-medium mb-5'>Company</p>
         <ul className='flex flex-col gap-2 text-gray-600'>
-            <li>Home</li>
-            <li>About Us</li>
-            <li>Contact Us</li>
-            <li>Privacy policy</li>
+            <li className='cursor-pointer' onClick={()=>{navigate('/');scrollTo(0,0)}}>Home</li>
+            <li className='cursor-pointer' onClick={()=>{navigate('/about');scrollTo(0,0)}}>About Us</li>
+            <li className='cursor-pointer' onClick={()=>{navigate('/contact');scrollTo(0,0)}}>Contact Us</li>
+            <li className='cursor-pointer' onClick={()=>{navigate('/');scrollTo(0,0)}}>Privacy policy</li>
         </ul>
       </div>
 
@@ -30,7 +32,7 @@ const Footer = () => {
              <p className='text-xl font-medium mb-5'>GET IN TOUCH</p>
             <ul className='flex flex-col gap-3 text-gray-600'>
                 <li>+91 77994 47698</li>
-                <li>bheemareddy29102003@gmail.com</li>
+                <li><a href='mailto:bheemareddy29102003@gmail.com'>bheemareddy29102003@gmail.com</a></li>
             </ul>
         </div>
       </div>

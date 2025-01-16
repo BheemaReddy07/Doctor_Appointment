@@ -16,8 +16,7 @@
     font-family: Outfit;
 }
 
-@media (max-width:740px){
-    .active p{
+ 
+.active p{
         @apply text-white bg-primary
     }
-}

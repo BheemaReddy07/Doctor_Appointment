@@ -70,12 +70,16 @@ const Appointment = () => {
       while(currentDate<endTime){
         let formattedTime = currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12: true})
         
-
-        //add slots to array
-        timeSlots.push({
+       //skip the slot for lunch break
+       if(!(currentDate.getHours()===13 || currentDate.getHours()===17))
+       {
+         //add slots to array
+         timeSlots.push({
           datetime: new Date(currentDate),
           time: formattedTime
         })
+       }
+       
 
         //increment current time by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes()+30)
