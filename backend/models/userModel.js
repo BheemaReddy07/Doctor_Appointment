@@ -9,7 +9,10 @@ const userSchema = new mongoose.Schema({
     address:{type:Object, default:{lin1:"",line2:''}},
     gender:{type:String,default:"Not Selected"},
     dob:{type:String,default:"Not Selected"},
-    phone:{type:String,default:'0000000000'}
+    phone:{type:String,default:'0000000000'},
+    otp: { type: String },
+    otpExpiration: { type: Date },
+    verified:{type:Boolean,default:false},
 
      
 })
