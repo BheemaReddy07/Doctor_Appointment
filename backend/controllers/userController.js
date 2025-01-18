@@ -3,7 +3,7 @@ import bcrypt, { genSalt } from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import userModel from "../models/userModel.js";
-
+import {v2 as cloudinary} from 'cloudinary'
 // function to create otp
 
 const generateOTP = () => {
@@ -25,7 +25,9 @@ const sendOTPEmail = async (email, otp, name) => {
     from: process.env.MAIL_SENDER_EMAIL,
     to: email,
     subject: "Your OTP Code",
-    text: `Hi ${name?name:""}!! Greetings from Prescripto, here is your OTP code: ${otp}`,
+    text: `Hi ${
+      name ? name : ""
+    }!! Greetings from Prescripto, here is your OTP code: ${otp}`,
   };
 
   try {
@@ -148,14 +150,13 @@ const loginUser = async (req, res) => {
   }
 };
 
-const requestForgetPasswordOTP = async (req,res) => {
-  const { name, email} = req.body;
+const requestForgetPasswordOTP = async (req, res) => {
+  const { name, email } = req.body;
   try {
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.json({ success: false, message: "User Not Found" });
     }
-     
 
     const otp = generateOTP();
     user.otp = otp;
@@ -167,26 +168,28 @@ const requestForgetPasswordOTP = async (req,res) => {
     res.json({ success: true, message: "otp sent successfully" });
   } catch (error) {
     res.json({ success: false, message: error.message });
-    console.log(error.message); 
+    console.log(error.message);
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { email, password, repassword, otp } = req.body;
 
-const resetPassword = async (req,res) =>{
-  const {email,password,repassword,otp} = req.body
-
-  try { 
-    const user = await userModel.findOne({email})
-
+  try {
+    const user = await userModel.findOne({ email });
 
     if (!user) {
       return res.json({ success: false, message: "no user found" });
     }
 
     if (password !== repassword) {
-      return res.json({ success: false, message: "password not matching with repassword",});
+      return res.json({
+        success: false,
+        message: "password not matching with repassword",
+      });
     }
-    if (user.otp !== otp || Date.now() > user.otpExpiration) { //checks if user entered otp and  otp in the database matches or not
+    if (user.otp !== otp || Date.now() > user.otpExpiration) {
+      //checks if user entered otp and  otp in the database matches or not
       console.log("Invalid or expired OTP");
       return res.json({ success: false, message: "invalid or expired OTP" });
     }
@@ -200,16 +203,11 @@ const resetPassword = async (req,res) =>{
     await user.save(); //saving the user
 
     res.json({ success: true, message: "password reset successfully!!" });
-  
-    
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "error" });
   }
-
-}
-
-
+};
 
 const cleanupExpiredUsers = async (req, res) => {
   try {
@@ -217,11 +215,12 @@ const cleanupExpiredUsers = async (req, res) => {
 
     // Find users who are not verified yet and whose OTP expiration time has passed
     const expiredUsers = await userModel.find({
-      verified: false,  // User has not been verified
+      verified: false, // User has not been verified
       otpExpiration: { $lt: now }, // OTP expiration time has passed
     });
 
-    if (expiredUsers.length > 0) { // If there are any expired users, delete them
+    if (expiredUsers.length > 0) {
+      // If there are any expired users, delete them
       await userModel.deleteMany({
         verified: false, // User has not been verified
         otpExpiration: { $lt: now }, // OTP expiration time has passed
@@ -231,10 +230,65 @@ const cleanupExpiredUsers = async (req, res) => {
   } catch (error) {
     console.error("Error cleaning up expired users:", error);
   }
-}
+};
 
 const HOUR = 1 * 60 * 1000; // 1 hour in milliseconds
 setInterval(cleanupExpiredUsers, HOUR);
+
+const getProfile = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const userData = await userModel
+      .findById( userId)
+      .select(["-password", "-otp", "-otpExpiration", "-verified"]);
+    res.json({ success: true, userData });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "error" });
+  }
+};
+
+
+const updateProfile = async (req,res) =>{
+
+  try {
+    const {userId,name,phone,address,dob,gender} = req.body
+    const imageFile = req.file
+    if(!name || !phone || !dob || !address || !gender){
+      return res.json({success:true,message:"Missing details"})
+    }
+
+
+    await userModel.findByIdAndUpdate(userId ,{name,phone,dob,gender,address:JSON.parse(address)})
+    
+    if(imageFile){
+      // upload image to cloudinary
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path,{resource_type:'image'})
+      const imageURL = imageUpload.secure_url
+
+
+      await userModel.findByIdAndUpdate(userId,{image:imageURL})
+    }
+    res.json({success:true,message:"Profile Updated"})
+
+
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "error" });
+    
+  }
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -244,5 +298,7 @@ export {
   loginUser,
   verifyOTPandRegister,
   requestForgetPasswordOTP,
-  resetPassword
+  resetPassword,
+  getProfile,
+  updateProfile
 };
