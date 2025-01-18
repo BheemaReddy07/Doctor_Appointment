@@ -25,6 +25,8 @@ const Login = () => {
   }, [token, navigate]);
 
   const handleOTPRequest = async () => {
+    const loadingNotification = toast.loading("Sending OTP....");
+    setTimeout(() => { toast.dismiss(loadingNotification) }, 4000);
     try {
       const endpoint =
         state === "Sign Up"
@@ -33,7 +35,7 @@ const Login = () => {
 
       const payload =
         state === "Sign Up"
-          ? { name, email,password }
+          ? { name, email, password }
           : { email };
 
       const { data } = await axios.post(backendurl + endpoint, payload);
@@ -84,9 +86,10 @@ const Login = () => {
         if (data.success) {
           toast.success(data.message);
           if (otpSent) {
-            setForgotPasswordMode(false);
+            setForgotPasswordMode(false); // This should disable Forgot Password mode after reset
+            setOTPSent(false); // Reset OTP sent status after reset
           } else {
-            setOTPSent(true);
+            setOTPSent(true); // OTP is now sent
           }
         } else {
           toast.error(data.message);
@@ -100,6 +103,7 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
+          toast.success("Login successful!");
         } else {
           toast.error(data.message);
         }
@@ -183,15 +187,22 @@ const Login = () => {
           </div>
         )}
 
-        {!otpSent && (
+        {state === "Login" && !forgotPasswordMode && !otpSent && (
+          <button
+            type="submit"
+            className="bg-primary text-white w-full py-2 rounded-md text-base"
+          >
+            Login
+          </button>
+        )}
+
+        {(state === "Sign Up" || forgotPasswordMode) && !otpSent && (
           <button
             type="button"
             onClick={handleOTPRequest}
             className="bg-primary text-white w-full py-2 rounded-md text-base"
           >
-            {forgotPasswordMode || state === "Sign Up"
-              ? "Send OTP"
-              : "Login"}
+            Send OTP
           </button>
         )}
 
@@ -200,11 +211,7 @@ const Login = () => {
             type="submit"
             className="bg-primary text-white w-full py-2 rounded-md text-base"
           >
-            {forgotPasswordMode
-              ? "Reset Password"
-              : state === "Sign Up"
-              ? "Create Account"
-              : "Login"}
+            {forgotPasswordMode ? "Reset Password" : "Create Account"}
           </button>
         )}
 

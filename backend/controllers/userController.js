@@ -25,7 +25,7 @@ const sendOTPEmail = async (email, otp, name) => {
     from: process.env.MAIL_SENDER_EMAIL,
     to: email,
     subject: "Your OTP Code",
-    text: `Hi ${name}!! Greetings from Prescripto, here is your OTP code: ${otp}`,
+    text: `Hi ${name?name:""}!! Greetings from Prescripto, here is your OTP code: ${otp}`,
   };
 
   try {
@@ -210,6 +210,31 @@ const resetPassword = async (req,res) =>{
 }
 
 
+
+const cleanupExpiredUsers = async (req, res) => {
+  try {
+    const now = Date.now(); // Get the current time
+
+    // Find users who are not verified yet and whose OTP expiration time has passed
+    const expiredUsers = await userModel.find({
+      verified: false,  // User has not been verified
+      otpExpiration: { $lt: now }, // OTP expiration time has passed
+    });
+
+    if (expiredUsers.length > 0) { // If there are any expired users, delete them
+      await userModel.deleteMany({
+        verified: false, // User has not been verified
+        otpExpiration: { $lt: now }, // OTP expiration time has passed
+      });
+      console.log(`${expiredUsers.length} expired users cleaned up.`);
+    }
+  } catch (error) {
+    console.error("Error cleaning up expired users:", error);
+  }
+}
+
+const HOUR = 1 * 60 * 1000; // 1 hour in milliseconds
+setInterval(cleanupExpiredUsers, HOUR);
 
 
 
