@@ -1,5 +1,5 @@
 import express from 'express'
-import { getProfile, loginUser,  requestForgetPasswordOTP,  requestOTP, resetPassword, updateProfile, verifyOTPandRegister } from '../controllers/userController.js'
+import { bookAppointment, cancelAppointment, getProfile, listAppointment, loginUser,  requestForgetPasswordOTP,  requestOTP, resetPassword, updateProfile, verifyOTPandRegister } from '../controllers/userController.js'
 import authUser from '../middlewares/authUser.js'
 import upload from '../middlewares/multer.js'
 
@@ -13,6 +13,9 @@ userRouter.post('/forgot/request-otp',requestForgetPasswordOTP)
 userRouter.post('/forgot/reset',resetPassword)
 userRouter.get('/get-profile',authUser,getProfile)
 userRouter.post('/update-profile',upload.single('image'),authUser,updateProfile)
+userRouter.post('/book-appointment',authUser,bookAppointment)
+userRouter.get('/appointments',authUser,listAppointment)
+userRouter.post('/cancel-appointment',authUser,cancelAppointment)
 
 
 export default userRouter
