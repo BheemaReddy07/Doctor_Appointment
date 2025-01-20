@@ -6,7 +6,7 @@ import userModel from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
-
+import stripe from 'stripe'
 
 
 
@@ -401,17 +401,51 @@ const cancelAppointment = async (req,res) =>{
 
 
 
+// API to make payment of appointment using Stripe
+const paymentStripe = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    const appointmentData = await findById(appointmentId);
 
+    if (!appointmentData || appointmentData.cancelled) {
+      return res.json({ success: false, message: "Appointment cancelled or not found" });
+    }
+
+    // Creating Stripe Payment Intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: appointmentData.amount * 100, // Amount in cents
+      currency: process.env.CURRENCY,
+      metadata: { appointmentId },
+    });
+
+    res.json({ success: true, clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error creating payment intent" });
+  }
+};
+
+
+// API to verify payment of Stripe
+const verifyStripe = async (req, res) => {
+  try {
+    const { paymentIntentId } = req.body;
+
+    // Fetch payment intent details from Stripe
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (paymentIntent.status === 'succeeded') {
+      await appointmentModel.findByIdAndUpdate(paymentIntent.metadata.appointmentId, { payment: true });
+      res.json({ success: true, message: "Payment successful" });
+    } else {
+      res.json({ success: false, message: "Payment failed or incomplete" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error verifying payment" });
+  }
+};
 
 export {
-  requestOTP,
-  loginUser,
-  verifyOTPandRegister,
-  requestForgetPasswordOTP,
-  resetPassword,
-  getProfile,
-  updateProfile,
-  bookAppointment,
-  listAppointment,
-  cancelAppointment
+  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment,paymentStripe,verifyStripe
 };

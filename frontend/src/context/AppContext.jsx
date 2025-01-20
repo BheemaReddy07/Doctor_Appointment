@@ -61,7 +61,7 @@ const loadUserProfileData = async () =>{
 
 
     const value ={
-        doctors,currencySymbol,token,setToken ,backendurl,userData,setUserData,loadUserProfileData
+        doctors,currencySymbol,token,setToken ,backendurl,userData,setUserData,loadUserProfileData ,getDoctorsData
     }
 
 
