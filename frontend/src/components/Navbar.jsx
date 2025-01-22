@@ -63,7 +63,7 @@ const Navbar = () => {
                     <img className='w-5' onClick={()=>setShowMenu(false)} src={assets.cross_icon} alt="" />
                 </div>
                 <ul className='flex flex-col  items-center gap-2 mt-5 px-5 text-large  font-medium  '>
-                     <NavLink className='w-full  border-b border-gray-300'   onClick={()=>setShowMenu(false)} to={'http://localhost:5174/'}> <p className="w-full  px-4 py-2 rounded inline-block"><UserAddOutlined /> Admin Panel</p></NavLink>   
+                     <NavLink className='w-full  border-b border-gray-300'   onClick={()=>setShowMenu(false)} to={'https://prescriptoadmin-six.vercel.app/'}> <p className="w-full  px-4 py-2 rounded inline-block"><UserAddOutlined /> Admin Panel</p></NavLink>   
                     
                      <NavLink className='w-full  border-b border-gray-300'   onClick={()=>setShowMenu(false)} to={'/'}> <p className="w-full  px-4 py-2 rounded inline-block"><HomeOutlined /> Home</p></NavLink>   
                      <NavLink  className='w-full  border-b border-gray-300' onClick={()=>setShowMenu(false)} to={'/doctors'}> <p className="w-full px-4 py-2 rounded inline-block"> <MedicineBoxOutlined /> All Doctors</p></NavLink>
