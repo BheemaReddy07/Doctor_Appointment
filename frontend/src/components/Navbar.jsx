@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import {assets} from '../assets/assets';
-import {PhoneOutlined,HomeOutlined,MedicineBoxOutlined,InfoCircleOutlined,HomeFilled,MedicineBoxFilled,InfoCircleFilled,PhoneFilled } from '@ant-design/icons';
+import {PhoneOutlined,HomeOutlined,MedicineBoxOutlined,InfoCircleOutlined,HomeFilled,MedicineBoxFilled,InfoCircleFilled,PhoneFilled,LogoutOutlined ,ContainerOutlined,UserAddOutlined} from '@ant-design/icons';
 
 import { NavLink,useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
@@ -49,17 +49,10 @@ const Navbar = () => {
             {
                 token
                 ?<div className='flex items-center gap-2 cursor-pointer group relative '>
-                    <img className='w-8 rounded-full' src={userData.image} alt="" />
-                    <img className='w-2.5 ' src={assets.dropdown_icon} alt="" />
-                    <div className='absolute top-0  right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block'>
-                        <div className='min-w-48 bg-stone-100 flex flex-col gap-4 p-4'>
-                            <p onClick={()=>navigate('my-profile')} className='hover:text-black cursor-pointer'>My Profile</p>
-                            <p onClick={()=>navigate('my-appointments')} className='hover:text-black cursor pointer'>My Appointments</p>
-                            <p  onClick={logout} className='hover:text-black cursor pointer'>Logout</p>
-                        </div>
-                    </div>
+                    <img  onClick={()=>navigate('my-profile')} className='w-8 rounded-full' src={userData.image} alt="" />
+                     
                 </div>
-                :<button onClick={()=>navigate('/login')} className='bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block'>Create Account</button>
+                :<button onClick={()=>navigate('/login')} className='bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block'>Login</button>
             }
             <img  onClick={()=>setShowMenu(true)} className='w-6  ' src={assets.menu_icon} alt="" />
 
@@ -70,10 +63,15 @@ const Navbar = () => {
                     <img className='w-5' onClick={()=>setShowMenu(false)} src={assets.cross_icon} alt="" />
                 </div>
                 <ul className='flex flex-col  items-center gap-2 mt-5 px-5 text-large  font-medium  '>
+                     <NavLink className='w-full  border-b border-gray-300'   onClick={()=>setShowMenu(false)} to={'http://localhost:5174/'}> <p className="w-full  px-4 py-2 rounded inline-block"><UserAddOutlined /> Admin Panel</p></NavLink>   
+                    
                      <NavLink className='w-full  border-b border-gray-300'   onClick={()=>setShowMenu(false)} to={'/'}> <p className="w-full  px-4 py-2 rounded inline-block"><HomeOutlined /> Home</p></NavLink>   
                      <NavLink  className='w-full  border-b border-gray-300' onClick={()=>setShowMenu(false)} to={'/doctors'}> <p className="w-full px-4 py-2 rounded inline-block"> <MedicineBoxOutlined /> All Doctors</p></NavLink>
+                    {token && <NavLink  className='w-full  border-b border-gray-300' onClick={()=>setShowMenu(false)} to={'/my-appointments'}> <p className="w-full px-4 py-2 rounded inline-block"> <ContainerOutlined/> My Appointments</p></NavLink> } 
                      <NavLink className='w-full  border-b border-gray-300' onClick={()=>setShowMenu(false)} to={'/about'}> <p className=" w-full px-4 py-2 rounded inline-block"> <InfoCircleOutlined /> About</p></NavLink>
                      <NavLink className='w-full  border-b border-gray-300'  onClick={()=>setShowMenu(false)} to={'/contact'}> <p className="w-full px-4 py-2 rounded inline-block"><PhoneOutlined /> Contact</p></NavLink>
+                     {token && <li  className='w-full  border-b border-gray-300 cursor-pointer' onClick={()=>{setShowMenu(false);logout()}}> <p className="w-full px-4 py-2 rounded inline-block"> <LogoutOutlined /> Logout</p></li> } 
+                    
                 </ul>
             </div>
 

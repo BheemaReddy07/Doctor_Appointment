@@ -5,6 +5,7 @@ import { useContext } from 'react'
 import { AdminContext } from '../../context/AdminContext'
 import {toast} from 'react-toastify'
 import axios from 'axios'
+import {EyeInvisibleOutlined,EyeOutlined} from '@ant-design/icons'
 const AddDoctor = () => {
         
     const [docImg,setDocImg] = useState(false)
@@ -18,12 +19,13 @@ const AddDoctor = () => {
     const [degree,setDegree] = useState('')
     const [address1,setAddress1] = useState('')
     const [address2,setAddress2] = useState('')
-
+    const [showPassword,setShowPassword] = useState(false)
     const {aToken,backendurl} = useContext(AdminContext)
 
     const onSubmitHandler = async (event) =>{
             event.preventDefault()
-
+            const loadingNotification = toast.loading("Adding Doctor....");
+            setTimeout(() => { toast.dismiss(loadingNotification) }, 2000);
             try {
                 if(!docImg){
                     return toast.error('Image Not Selected')
@@ -102,9 +104,29 @@ const AddDoctor = () => {
                             <input onChange={(e)=>setEmail(e.target.value)} value={email} className='border rounded px-3 py-2' type="email" placeholder='Email' required />
                         </div>
                         <div className='flex-1 flex flex-col gap-1'>
-                            <p>Doctor Password</p>
-                            <input onChange={(e)=>setPassword(e.target.value)} value={password} className='border rounded px-3 py-2'type="Password" placeholder='Password' required />
-                        </div>
+                        <div className="w-full relative">
+          <p className="text-sm text-gray-700">Password</p>
+          <div className="relative">
+            <input
+              className="border border-[#DADADA] rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {showPassword ? (
+              <EyeInvisibleOutlined
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                onClick={() => setShowPassword(false)}
+              />
+            ) : (
+              <EyeOutlined
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                onClick={() => setShowPassword(true)}
+              />
+            )}
+          </div>
+        </div> </div>
 
                         <div className='flex-1 flex flex-col gap-1'>
                             <p>Experience</p>

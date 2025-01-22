@@ -13,6 +13,9 @@ const MyProfile = () => {
 
   const updateUserProfileData = async () => {
     try {
+      let loadingNotification
+     image ?  loadingNotification = toast.loading("Saving Info...") : null;
+      setTimeout(() => { toast.dismiss(loadingNotification) }, 3000);
       const formData = new FormData()
 
       formData.append('name', userData.name)
@@ -99,6 +102,7 @@ const MyProfile = () => {
           {
             isEdit
               ? <select className='max-w-20 bg-gray-100' value={userData.gender} onChange={(e) => setUserData(prev => ({ ...prev, gender: e.target.value }))}>
+                <option >Not Selected</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
