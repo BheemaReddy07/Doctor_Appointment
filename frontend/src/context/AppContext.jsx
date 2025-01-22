@@ -9,11 +9,13 @@ const AppContextProvider = (props) =>{
 
     
     const currencySymbol = '₹'
-    const [doctors,setDoctors] = useState([])
+    
     const [token,setToken] = useState(localStorage.getItem('token')?localStorage.getItem('token'): false)
     const backendurl = import.meta.env.VITE_BACKEND_URL
 
     const [userData,setUserData]   = useState(false) 
+
+    const [doctors,setDoctors] = useState([])
     const getDoctorsData = async () =>{
         try {
 
@@ -41,7 +43,7 @@ const loadUserProfileData = async () =>{
 
         if(data.success){
             setUserData(data.userData)
-            console.log(data.userData.address.line1)
+         
         }
         else{
             toast.error(data.message)
@@ -61,7 +63,7 @@ const loadUserProfileData = async () =>{
 
 
     const value ={
-        doctors,currencySymbol,token,setToken ,backendurl,userData,setUserData,loadUserProfileData ,getDoctorsData
+        doctors,currencySymbol,token,setToken ,backendurl,userData,setUserData,loadUserProfileData ,getDoctorsData                   
     }
 
 

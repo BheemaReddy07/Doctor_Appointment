@@ -7,14 +7,36 @@ export const AdminContext = createContext()
 const AdminContextProvider = (props) => {
     const [aToken ,setAToken] = useState(localStorage.getItem('atoken')?localStorage.getItem('atoken'):"")
     const [doctors,setDoctors] = useState([])
+    const [appointments,setAppointments] = useState([])
+    const [dashData,setDashData] = useState(false)
  const backendurl = import.meta.env.VITE_BACKEND_URL
+
+
+ const [adoctors,asetDoctors] = useState([])
+    const getDoctorsData = async () =>{
+        try {
+
+            const {data} = await axios.get(backendurl+'/api/doctor/list')
+            if(data.success){
+                asetDoctors(data.doctors)
+            }
+            else{
+                toast.error(data.message)
+            }
+            
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
 
  const getAllDoctors = async () =>{
     try {
         const {data} = await axios.post(backendurl + '/api/admin/all-doctors',{},{headers:{aToken}})
         if(data.success){
             setDoctors(data.doctors)
-            console.log(data.doctors)
+            
         }
         else{
             toast.error(data.message)
@@ -28,7 +50,7 @@ const AdminContextProvider = (props) => {
  const changeAvailability = async (docId) =>{
     try {
          const {data}  = await axios.post(backendurl+'/api/admin/change-availability',{docId},{headers:{aToken}}) 
-         console.log(docId)
+         
          if(data.success){
             toast.success(data.message)
             getAllDoctors()
@@ -36,17 +58,76 @@ const AdminContextProvider = (props) => {
          else{
             toast.error(data.message)
             console.log(data.message)
-            console.log(docId)
+             
          }
     } catch (error) {
         toast.error(error.message)
         console.log(error.message)
-        console.log(docId)
+       
     }
  }
 
+const getAllAppointments = async () =>{
+    try {
+        const {data} = await axios.get(backendurl+'/api/admin/appointments',{headers:{aToken}})
+        if(data.success){
+            setAppointments(data.appointments)
+             
+        }
+        else{
+            toast.error(data.message)
+        }
+    } catch (error) {
+        toast.error(error.message)
+        console.log(error.message)
+    }
+}
+
+
+const cancelAppointment = async (appointmentId) =>{
+    try {
+        const {data} = await axios.post(backendurl+'/api/admin/cancel-appointment',{appointmentId},{headers:{aToken}})
+        if(data.success){
+            toast.success(data.message)
+            getDoctorsData()
+
+        }
+        else{
+            toast.error(data.message)
+        }
+        
+    } catch (error) {
+        toast.error(error.message)
+        console.log(error.message)
+    }
+    
+}
+
+const getDashData = async () =>{
+    try {
+        const {data} = await axios.get(backendurl+'/api/admin/dashboard',{headers:{aToken}})
+        if(data.success)
+        {
+            setDashData(data.dashData)
+        
+        }
+        else{
+            toast.error(data.message)
+            console.log(data.message)
+        }
+        
+    } catch (error) {
+        toast.error(error.message)
+        console.log(error.message)
+    }
+}
+
+
+
+
+
     const  value = {
-        aToken,setAToken,backendurl ,doctors,getAllDoctors,changeAvailability
+        aToken,setAToken,backendurl ,doctors,getAllDoctors,changeAvailability,getAllAppointments,appointments,setAppointments,cancelAppointment,getDashData,dashData,setDashData
 
     }
 

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -7,11 +6,12 @@ import {useNavigate} from 'react-router-dom'
 const MyAppointments = () => {
 
   const { backendurl, token,getDoctorsData } = useContext(AppContext)
+  const navigate = useNavigate()
+
 
   const [appointments, setAppointments] = useState([])
   const months = [" ", 'Jan', 'Feb', 'Mar', "Apr", 'May', "Jun", 'Jul', "Aug", 'Sep', "Oct", "Nov", "Dec"]
-  const navigate = useNavigate()
-
+  
    
 
 
@@ -40,9 +40,10 @@ const MyAppointments = () => {
   }
 
   const cancelAppointment = async (appointmentId) => {
+    
     try {
 
-      console.log(appointmentId);
+      
       const { data } = await axios.post(backendurl + '/api/user/cancel-appointment', { appointmentId }, { headers: { token } })
       if (data.success) {
         toast.success(data.message)
@@ -66,7 +67,7 @@ const MyAppointments = () => {
     if (token) {
       getUserAppointments()
     }
-  }, [token])
+  }, [token,appointments])
 
   return (
     <div>
@@ -88,10 +89,11 @@ const MyAppointments = () => {
 
               </div>
               <div className='flex flex-col gap-2 justify-end'>
-                {!item.cancelled && item.payment && <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50'>Paid</button>}
-                {!item.cancelled && !item.payment && <button  className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-500'> Pay Online</button>}
-                {!item.cancelled && <button onClick={() => cancelAppointment(item._id)} className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-500'>Cancel Appointment</button>}
-                {item.cancelled && <button className='sm:min-w-48 py-2 border  border-red-500 rounded text-red-500'>Appointment Cancelled</button>}
+                {!item.cancelled && item.payment && !item.isCompleted &&  <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-50'>Paid</button>}
+                {!item.cancelled && !item.payment && !item.isCompleted &&  <button  className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-primary hover:text-white transition-all duration-500'> Pay Online</button>}
+                {!item.cancelled && !item.isCompleted &&  <button onClick={() => cancelAppointment(item._id)} className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-500'>Cancel Appointment</button>}
+                {item.cancelled && !item.isCompleted && <button className='sm:min-w-48 py-2 border  border-red-500 rounded text-red-500'>Appointment Cancelled</button>}
+                {item.isCompleted && <button className='sm:min-w-48 py-2 border border-green-500 rounded text-green-500'>Completed</button>}
               </div>
             </div>
           ))

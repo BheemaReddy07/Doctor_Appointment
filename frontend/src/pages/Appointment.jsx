@@ -20,6 +20,7 @@ const Appointment = () => {
   const [docSlots,setDocSlots] = useState([])
   const [slotIndex,setSlotIndex] = useState(0)
   const [slotTime,setSlotTime] = useState('')
+  const [appointments,setAppointments] = useState([])
 
   const fectchDocInfo = async () => {
     const docInfo = doctors.find(doc => doc._id === docId)
@@ -28,6 +29,10 @@ const Appointment = () => {
   }
 
   const getAvailableSlot = async () =>{
+    if (!docInfo || !docInfo.slots_booked) {
+      // If docInfo or slots_booked is not available, skip processing
+      return;
+    }
     setDocSlots([])
 
     // getting current date
@@ -73,7 +78,7 @@ const Appointment = () => {
       while(currentDate<endTime){
         let formattedTime = currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12: true})
 
-
+       
         let day = currentDate.getDate()
         let month  = currentDate.getMonth() +1
         let year = currentDate.getFullYear()
@@ -94,7 +99,7 @@ const Appointment = () => {
         })
        }
         }
-        
+         
      
        
 
@@ -102,6 +107,7 @@ const Appointment = () => {
         currentDate.setMinutes(currentDate.getMinutes()+30)
 
       }
+      
 
       setDocSlots(prev =>([...prev,timeSlots]))
     }
@@ -140,19 +146,32 @@ const Appointment = () => {
     
   }
 
+  const listAllAppointments = async () =>{
+    try {
+      const {data}  = await axios.get(backendurl +'/api/user/all-appointments',{headers:{token}})
+      if(data.success){
+        setAppointments(data.appointments)
+      }
+     } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
 
   useEffect(() => {
     fectchDocInfo()
   }, [doctors, docId])
 
   useEffect(()=>{
-  getAvailableSlot()
+    if (docInfo) {
+      getAvailableSlot();
+      getDoctorsData()
+       
+    }
   },[docInfo])
 
-  useEffect(()=>{
-    console.log(docSlots)
-  },[docSlots])
- 
+   
 
 
 
