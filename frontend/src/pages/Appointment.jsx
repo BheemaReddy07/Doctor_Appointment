@@ -113,15 +113,26 @@ const Appointment = () => {
     }
   }
 
-const validateSlots = async (docId,slotDate,slotTime) =>{
-  try {
-    const {data} = await axios.post(backendurl+'/api/user/check-slot-availability',{docId,slotDate,slotTime},{headers:{token}})
-     return data.success;
-  } catch (error) {
-    console.log(error)
-      toast.error(error.message)
-  }
-}
+  const validateSlots = async (docId, slotDate, slotTime) => {
+    try {
+      const { data } = await axios.post(
+        backendurl + "/api/user/check-slot-availability",
+        { docId, slotDate, slotTime },
+        { headers: { token } }
+      );
+  
+      if (!data.success) {
+        toast.error(data.message); // Display error only once
+      }
+  
+      return data.success; // Return true or false
+    } catch (error) {
+      console.log(error);
+      toast.error("Error validating slot availability"); // General error message
+      return false; // Return false to indicate failure
+    }
+  };
+  
 
 
 
@@ -177,7 +188,7 @@ const validateSlots = async (docId,slotDate,slotTime) =>{
       getDoctorsData()
        
     }
-  },[docInfo])
+  },[docInfo,docSlots])
 
    
 
