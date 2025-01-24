@@ -86,8 +86,7 @@ const Appointment = () => {
         const slotDate  = day + "-" +month +"-"+year
         const slotTime = formattedTime
 
-        const isSlotAvailable = docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime) ?false : true
-
+        const isSlotAvailable =  !(docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime));
         if(isSlotAvailable){
        //skip the slot for lunch break
        if(!(currentDate.getHours()===13 || currentDate.getHours()===17))
@@ -162,6 +161,7 @@ const Appointment = () => {
       if(data.success){
         toast.success(data.message)
         getDoctorsData()
+        fectchDocInfo()
         navigate('/my-appointments')
       }
       else{
@@ -188,7 +188,7 @@ const Appointment = () => {
       getDoctorsData()
        
     }
-  },[docInfo,docSlots])
+  },[docInfo])
 
    
 
