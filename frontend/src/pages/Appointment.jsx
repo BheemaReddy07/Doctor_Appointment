@@ -114,11 +114,7 @@ const Appointment = () => {
 
   const validateSlots = async (docId, slotDate, slotTime) => {
     try {
-      const slotTime = date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
+      
       
       const { data } = await axios.post(
         backendurl + "/api/user/check-slot-availability",
@@ -149,11 +145,7 @@ const Appointment = () => {
     }
 
     try {
-      const slotTime = date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
+       
       
       const date = docSlots[slotIndex][0].datetime
 
