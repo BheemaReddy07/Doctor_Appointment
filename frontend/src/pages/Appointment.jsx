@@ -113,6 +113,18 @@ const Appointment = () => {
     }
   }
 
+const validateSlots = async (docId,slotDate,slotTime) =>{
+  try {
+    const {data} = await axios.post(backendurl+'/api/user/check-user-availability',{docId,slotDate,slotTime},{headers:{token}})
+     return data.success;
+  } catch (error) {
+    console.log(error)
+      toast.error(error.message)
+  }
+}
+
+
+
   const bookAppointment = async () =>{
     
     if(!token){
@@ -128,7 +140,12 @@ const Appointment = () => {
       let year = date.getFullYear()
 
       const slotDate = day + "-" +month +"-"+year
-
+      
+      const isAvailable = await validateSlots(docId,slotDate,slotTime);
+      if(!isAvailable){
+        toast.error('Slot is no longer available');
+        return;
+      }
 
       const {data} = await  axios.post(backendurl + '/api/user/book-appointment',{docId,slotDate,slotTime},{headers:{token}})
       if(data.success){
@@ -147,17 +164,7 @@ const Appointment = () => {
     
   }
 
-  const listAllAppointments = async () =>{
-    try {
-      const {data}  = await axios.get(backendurl +'/api/user/all-appointments',{headers:{token}})
-      if(data.success){
-        setAppointments(data.appointments)
-      }
-     } catch (error) {
-      console.log(error)
-      toast.error(error.message)
-    }
-  }
+   
 
 
   useEffect(() => {

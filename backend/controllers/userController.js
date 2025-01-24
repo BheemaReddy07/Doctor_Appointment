@@ -401,10 +401,25 @@ const cancelAppointment = async (req,res) =>{
 
 
 
+const checkSlotAvailability = async(req,res) =>{
+  try {
+      const {docId,slotDate,slotTime} = req.body
 
-// API to make payment of appointment using Stripe
+      const docData = await findById(docId)
+      const slots_booked = docData.slots_booked
+      if(slots_booked[slotDate]  && slots_booked[slotDate].includes(slotTime)){
+          return res.json({success:false,message:"Slot not available"})
+      }
+      res.json({success:true,message:"Slot Available"})
+      
+  } catch (error) {
+      res.json({success:false,message:error.message})
+      console.log(error.message)
+      
+  }
+}
  
 
 export {
-  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment
+  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment,checkSlotAvailability
 };
