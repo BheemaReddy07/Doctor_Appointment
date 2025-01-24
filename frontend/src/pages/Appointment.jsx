@@ -76,7 +76,7 @@ const Appointment = () => {
       
        let timeSlots = []
       while(currentDate<endTime){
-        let formattedTime = currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+        let formattedTime = currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12: false})
 
        
         let day = currentDate.getDate()
@@ -114,6 +114,12 @@ const Appointment = () => {
 
   const validateSlots = async (docId, slotDate, slotTime) => {
     try {
+      const slotTime = date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      
       const { data } = await axios.post(
         backendurl + "/api/user/check-slot-availability",
         { docId, slotDate, slotTime },
@@ -143,6 +149,12 @@ const Appointment = () => {
     }
 
     try {
+      const slotTime = date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      
       const date = docSlots[slotIndex][0].datetime
 
       let day = date.getDate()
