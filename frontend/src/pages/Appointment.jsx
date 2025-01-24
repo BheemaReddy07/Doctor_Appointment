@@ -115,7 +115,7 @@ const Appointment = () => {
 
 const validateSlots = async (docId,slotDate,slotTime) =>{
   try {
-    const {data} = await axios.post(backendurl+'/api/user/check-user-availability',{docId,slotDate,slotTime},{headers:{token}})
+    const {data} = await axios.post(backendurl+'/api/user/check-slot-availability',{docId,slotDate,slotTime},{headers:{token}})
      return data.success;
   } catch (error) {
     console.log(error)

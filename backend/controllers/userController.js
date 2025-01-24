@@ -405,7 +405,7 @@ const checkSlotAvailability = async(req,res) =>{
   try {
       const {docId,slotDate,slotTime} = req.body
 
-      const docData = await findById(docId)
+      const docData = await doctorModel.findById(docId)
       const slots_booked = docData.slots_booked
       if(slots_booked[slotDate]  && slots_booked[slotDate].includes(slotTime)){
           return res.json({success:false,message:"Slot not available"})
