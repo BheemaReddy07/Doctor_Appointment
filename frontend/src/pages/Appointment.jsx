@@ -76,7 +76,7 @@ const Appointment = () => {
       
        let timeSlots = []
       while(currentDate<endTime){
-        let formattedTime = currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12: true})
+        let formattedTime = currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
 
        
         let day = currentDate.getDate()
