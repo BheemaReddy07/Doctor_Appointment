@@ -12,7 +12,7 @@ const Login = () => {
   const [state, setState] = useState('Admin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false) 
 
   const { setAToken, backendurl } = useContext(AdminContext)
   const { setDToken, dToken } = useContext(DoctorContext)

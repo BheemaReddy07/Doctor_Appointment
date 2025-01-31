@@ -6,7 +6,7 @@ import userModel from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
-
+import Stripe from 'stripe'
 
 
 // function to create otp
@@ -292,7 +292,7 @@ const bookAppointment = async (req, res) => {
 
     const docData = await doctorModel.findById(docId).select("-password");
     if (!docData.available) {
-      return res.json({ success: false, message: "Doctor NOt Available" });
+      return res.json({ success: false, message: "Doctor Not Available" });
     }
     let slots_booked = docData.slots_booked;
 
@@ -418,8 +418,76 @@ const checkSlotAvailability = async(req,res) =>{
       
   }
 }
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+const paymentStripe = async (req,res) =>{
+  try {
+    const {appointmentId} = req.body
+    const appointmentData = await appointmentModel.findById(appointmentId)
+
+    if(!appointmentData || appointmentData.cancelled){
+      return res.json({success:false,message:"Appointment not found"})
+    }
+    const session = await stripe.checkout.sessions.create({
+      line_items:[
+        {
+          price_data:{
+            currency:'inr',
+            product_data:{
+              name:appointmentData.docData.name,
+              images:[appointmentData.docData.image],
+              description:appointmentData.docData.speciality,
+
+            },
+            unit_amount:appointmentData.amount * 100 ,
+          },
+          quantity:1,
+        }
+      ],
+      mode:'payment',
+      success_url:`${process.env.FRONTEND_URL}/verify?success=true&appointId=${appointmentData._id}`,
+      cancel_url:`${process.env.FRONTEND_URL}/verify?success=false&appointId=${appointmentData._id}`,
+    })
+    res.json({success:true,success_url:session.url})
+    
+  } catch (error) {
+    res.json({success:false,message:error.message})
+    console.log(error.message)
+  }
+}
  
+const verifyPayment = async (req,res) =>{
+  try {
+    const {appointId,success}  = req.body
+
+    if(!appointId){
+      return res.status(400).json({success:false,message:"Missing Appointment Id"})
+    }
+
+    const appoint = await appointmentModel.findById(appointId)
+    if(!appoint){
+      return res.status(404).json({success:false,message:"Transaction not found"})
+    }
+    const userdata  = await userModel.findById(appoint.userId)
+    if(!userdata){
+      return res.status(404).json({success:false,message:"User not found"})
+    }
+
+    if(success){
+      appoint.payment = true;
+      await appoint.save();
+
+      return res.status(200).json({success:true,message:"payment verified successfully"})
+    }
+    return res.status(400).json({success:true,message:"payment not completed"})
+    
+  } catch (error) {
+    res.json({success:false,message:error.message})
+    console.log(error.message)
+  }
+}
 
 export {
-  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment,checkSlotAvailability
+  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment,checkSlotAvailability,paymentStripe ,verifyPayment
 };

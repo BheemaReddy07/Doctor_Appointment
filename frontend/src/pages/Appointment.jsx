@@ -7,7 +7,7 @@ import RelatedDoctors from '../components/RelatedDoctors';
 import {toast} from 'react-toastify'
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
-const Appointment = () => {
+const   Appointment = () => {
 
 
   const { docId } = useParams();
@@ -25,7 +25,7 @@ const Appointment = () => {
   const fectchDocInfo = async () => {
     const docInfo = doctors.find(doc => doc._id === docId)
     setDocInfo(docInfo)
-    console.log(docInfo)
+     
   }
 
   const getAvailableSlot = async () =>{

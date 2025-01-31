@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import {EyeInvisibleOutlined,EyeOutlined} from '@ant-design/icons'
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
 
 const Login = () => {
   const { backendurl, token, setToken } = useContext(AppContext);
@@ -19,8 +19,8 @@ const Login = () => {
   const [repassword, setRePassword] = useState("");
   const [otp, setOTP] = useState("");
 
-  const [showPassword,setShowPassword] = useState(false)
-  const [showRePassword,setShowRePassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showRePassword, setShowRePassword] = useState(false)
 
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
 
     try {
       if (state === "Sign Up") {
@@ -120,17 +120,14 @@ const Login = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="min-h-[80vh] flex items-center"
-    >
-      <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg">
+    <form onSubmit={handleSubmit}  className="min-h-[80vh] flex items-center" >
+      <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg ">
         <p className="text-2xl font-semibold">
           {state === "Sign Up"
             ? "Create Account"
             : forgotPasswordMode
-            ? "Forgot Password"
-            : "Login"}
+              ? "Forgot Password"
+              : "Login"}
         </p>
         {state === "Sign Up" && (
           <div className="w-full">
@@ -154,59 +151,59 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-         
+
         </div>
 
         <div className="w-full relative">
-  <p className="text-sm text-gray-700">Password</p>
-  <div className="relative">
-    <input
-      className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      type={showPassword ? 'text' : 'password'}
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      required
-    />
-    {showPassword ? (
-      <EyeInvisibleOutlined
-        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-        onClick={() => setShowPassword(false)}
-      />
-    ) : (
-      <EyeOutlined
-        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-        onClick={() => setShowPassword(true)}
-      />
-    )}
-  </div>
-</div>
+          <p className="text-sm text-gray-700">Password</p>
+          <div className="relative">
+            <input
+              className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {showPassword ? (
+              <EyeInvisibleOutlined
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                onClick={() => setShowPassword(false)}
+              />
+            ) : (
+              <EyeOutlined
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                onClick={() => setShowPassword(true)}
+              />
+            )}
+          </div>
+        </div>
 
 
         {(state === "Sign Up" || forgotPasswordMode) && (
-           <div className="w-full relative">
-           <p className="text-sm text-gray-700">Re-Password</p>
-           <div className="relative">
-             <input
-               className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-               type={showRePassword ? 'text' : 'password'}
-               value={repassword}
-               onChange={(e) => setRePassword(e.target.value)}
-               required
-             />
-             {showRePassword ? (
-               <EyeInvisibleOutlined
-                 className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-                 onClick={() => setShowRePassword(false)}
-               />
-             ) : (
-               <EyeOutlined
-                 className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-                 onClick={() => setShowRePassword(true)}
-               />
-             )}
-           </div>
-         </div>
-         
+          <div className="w-full relative">
+            <p className="text-sm text-gray-700">Re-Password</p>
+            <div className="relative">
+              <input
+                className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                type={showRePassword ? 'text' : 'password'}
+                value={repassword}
+                onChange={(e) => setRePassword(e.target.value)}
+                required
+              />
+              {showRePassword ? (
+                <EyeInvisibleOutlined
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                  onClick={() => setShowRePassword(false)}
+                />
+              ) : (
+                <EyeOutlined
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                  onClick={() => setShowRePassword(true)}
+                />
+              )}
+            </div>
+          </div>
+
         )}
 
         {otpSent && (
