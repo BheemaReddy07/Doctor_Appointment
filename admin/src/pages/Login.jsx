@@ -61,7 +61,7 @@ const Login = () => {
         <p className='text-2xl font-semibold m-auto'><span className='text-primary'>{state}</span> Login</p>
         <div className='w-full' >
           <p>Email</p>
-          <input onChange={(e) => setEmail(e.target.value)} value={email} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="email" required />
+          <input onChange={(e) => setEmail(e.target.value)} value={email} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="email" required placeholder='Enter Email' />
         </div>
         <div className="w-full relative">
           <p className="text-sm text-gray-700">Password</p>
@@ -71,6 +71,7 @@ const Login = () => {
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder='Enter Password'
               required
             />
             {showPassword ? (
@@ -90,8 +91,14 @@ const Login = () => {
         <button className='bg-primary text-white w-full py-2 rounded-md text-base'>Login</button>
         {
           state === "Admin"
-            ? <p>Doctor Login? <span className='cursor-pointer text-primary underline' onClick={() => setState('Doctor')}>Click here</span></p>
-            : <p>Admin Login? <span className='cursor-pointer text-primary underline' onClick={() => setState('Admin')}>Click here</span></p>
+            ? <><p>Doctor Login? <span className='cursor-pointer text-primary underline' onClick={() => setState('Doctor')}>Click here</span></p>
+              <div> <p className='text-gray-600/70 font-mono'>sample Email:<span className='font-normal text-gray-600/80'> admin@prescripto.com</span></p>
+            <p className='text-gray-600/70 font-mono'>sample Password: <span className='font-normal text-gray-600/80'>qwerty123</span></p></div>
+            </>
+            : <><p>Admin Login? <span className='cursor-pointer text-primary underline' onClick={() => setState('Admin')}>Click here</span></p>
+               <div> <p className='text-gray-600/70 font-mono'>sample Email:<span className='font-normal text-gray-600/80'>richardjames@prescripto.com</span></p>
+            <p className='text-gray-600/70 font-mono'>sample Password: <span className='font-normal text-gray-600/80'>123456789</span></p></div>
+            </>
         }
       </div>
 
