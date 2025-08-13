@@ -73,7 +73,7 @@ Create a `.env` file inside the `backend/` folder:
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/BheemaReddy07/Doctor_Appointment.git
-cd Food_delivery
+cd Doctor_Appointment
 ```
 ### 2. Install Backend Dependencies
 ```bash
@@ -99,7 +99,7 @@ npm run dev
 
 # Start frontend
 cd ../frontend
-npm start
+npm run dev
 ```
 ---
 ##  Test Card (if using Stripe)
