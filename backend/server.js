@@ -6,6 +6,7 @@ import connectCloudinary from './config/cloudinary.js'
 import adminRouter from './routes/adminRoute.js'
 import doctorRouter from './routes/doctorRoute.js'
 import userRouter from './routes/userRoute.js'
+import serverless from 'serverless-http';
 //app config
 const app = express()
 const port  = process.env.PORT || 4000
@@ -33,4 +34,6 @@ app.get('/',(req,res)=>{
 
 
 
-app.listen(port ,()=>console.log('server started',port))
+//app.listen(port ,()=>console.log('server started',port))
+
+export const handler = serverless(app);
