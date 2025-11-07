@@ -36,4 +36,4 @@ app.get('/',(req,res)=>{
 
 //app.listen(port ,()=>console.log('server started',port))
 
-export const handler = serverless(app);
+export default handler = serverless(app);
