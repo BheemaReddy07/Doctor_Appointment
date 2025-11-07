@@ -19,17 +19,15 @@ const generateOTP = () => {
 
 const sendOTPEmail = async (email, otp, name) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false, // TLS
+    service:"Gmail",
     auth: {
-      user: process.env.BREVO_USER,
-      pass: process.env.BREVO_PASS,
+      user: process.env.MAIL_SENDER_MAIL_NEW,
+      pass: process.env.MAIL_SENDER_EMAIL_NEW_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: `Prescripto <prescripto2025@gmail.com>`,
+    from:  process.env.MAIL_SENDER_MAIL_NEW,
     to: email,
     subject: "Your OTP Code",
     text: `Hi ${name ? name : ""
