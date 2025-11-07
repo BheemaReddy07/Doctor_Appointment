@@ -19,20 +19,21 @@ const generateOTP = () => {
 
 const sendOTPEmail = async (email, otp, name) => {
   const transporter = nodemailer.createTransport({
-    service: "Gmail",
+    host: "smtp-relay.brevo.com",
+    port: 587,
+    secure: false, // TLS
     auth: {
-      user: process.env.MAIL_SENDER_MAIL_NEW,
-      pass: process.env.MAIL_SENDER_EMAIL_NEW_PASSWORD,
+      user: process.env.BREVO_USER,
+      pass: process.env.BREVO_PASS,
     },
   });
 
   const mailOptions = {
-    from: process.env.MAIL_SENDER_EMAIL,
+    from: `Prescripto <prescripto2025@gmail.com>`,
     to: email,
     subject: "Your OTP Code",
-    text: `Hi ${
-      name ? name : ""
-    }!! Greetings from Prescripto, here is your OTP code: ${otp}`,
+    text: `Hi ${name ? name : ""
+      }!! Greetings from Prescripto, here is your OTP code: ${otp}`,
   };
 
   try {
@@ -342,20 +343,20 @@ const bookAppointment = async (req, res) => {
 
 //API to get user appointment for frontend my-appointment page
 
-const listAppointment = async (req,res) =>{
-   
+const listAppointment = async (req, res) => {
+
   try {
-    const {userId} = req.body
+    const { userId } = req.body
 
-    const appointments = await appointmentModel.find({userId})
+    const appointments = await appointmentModel.find({ userId })
 
-    res.json({success:true,appointments})
+    res.json({ success: true, appointments })
 
 
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "error" });
-    
+
   }
 }
 
@@ -363,37 +364,37 @@ const listAppointment = async (req,res) =>{
 
 
 // API to cancel the appointment
-const cancelAppointment = async (req,res) =>{
+const cancelAppointment = async (req, res) => {
   try {
-    
-    const {userId , appointmentId} = req.body
+
+    const { userId, appointmentId } = req.body
 
     const appointmentData = await appointmentModel.findById(appointmentId)
- 
+
     //verify appointment user
-    if(appointmentData.userId!=userId){
-      return res.json({success:false,message:"Unauthorized access"})
+    if (appointmentData.userId != userId) {
+      return res.json({ success: false, message: "Unauthorized access" })
     }
-    await appointmentModel.findByIdAndUpdate(appointmentId,{cancelled:true})
+    await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
 
     //releasing doctors slot
 
-    const {docId,slotDate,slotTime} = appointmentData
+    const { docId, slotDate, slotTime } = appointmentData
 
     const doctorData = await doctorModel.findById(docId)
 
     let slots_booked = doctorData.slots_booked
     slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
 
-  await doctorModel.findByIdAndUpdate(docId,{slots_booked})
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked })
 
 
-  res.json({success:true,message:"Appointment Cancelled"})
+    res.json({ success: true, message: "Appointment Cancelled" })
 
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "error" });
-    
+
   }
 }
 
@@ -401,93 +402,93 @@ const cancelAppointment = async (req,res) =>{
 
 
 
-const checkSlotAvailability = async(req,res) =>{
+const checkSlotAvailability = async (req, res) => {
   try {
-      const {docId,slotDate,slotTime} = req.body
+    const { docId, slotDate, slotTime } = req.body
 
-      const docData = await doctorModel.findById(docId)
-      const slots_booked = docData.slots_booked
-      if(slots_booked[slotDate]  && slots_booked[slotDate].includes(slotTime)){
-          return res.json({success:false,message:"Slot not available"})
-      }
-      res.json({success:true,message:"Slot Available"})
-      
+    const docData = await doctorModel.findById(docId)
+    const slots_booked = docData.slots_booked
+    if (slots_booked[slotDate] && slots_booked[slotDate].includes(slotTime)) {
+      return res.json({ success: false, message: "Slot not available" })
+    }
+    res.json({ success: true, message: "Slot Available" })
+
   } catch (error) {
-      res.json({success:false,message:error.message})
-      console.log(error.message)
-      
+    res.json({ success: false, message: error.message })
+    console.log(error.message)
+
   }
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-const paymentStripe = async (req,res) =>{
+const paymentStripe = async (req, res) => {
   try {
-    const {appointmentId} = req.body
+    const { appointmentId } = req.body
     const appointmentData = await appointmentModel.findById(appointmentId)
 
-    if(!appointmentData || appointmentData.cancelled){
-      return res.json({success:false,message:"Appointment not found"})
+    if (!appointmentData || appointmentData.cancelled) {
+      return res.json({ success: false, message: "Appointment not found" })
     }
     const session = await stripe.checkout.sessions.create({
-      line_items:[
+      line_items: [
         {
-          price_data:{
-            currency:'inr',
-            product_data:{
-              name:appointmentData.docData.name,
-              images:[appointmentData.docData.image],
-              description:appointmentData.docData.speciality,
+          price_data: {
+            currency: 'inr',
+            product_data: {
+              name: appointmentData.docData.name,
+              images: [appointmentData.docData.image],
+              description: appointmentData.docData.speciality,
 
             },
-            unit_amount:appointmentData.amount * 100 ,
+            unit_amount: appointmentData.amount * 100,
           },
-          quantity:1,
+          quantity: 1,
         }
       ],
-      mode:'payment',
-      success_url:`${process.env.FRONTEND_URL}/verify?success=true&appointId=${appointmentData._id}`,
-      cancel_url:`${process.env.FRONTEND_URL}/verify?success=false&appointId=${appointmentData._id}`,
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/verify?success=true&appointId=${appointmentData._id}`,
+      cancel_url: `${process.env.FRONTEND_URL}/verify?success=false&appointId=${appointmentData._id}`,
     })
-    res.json({success:true,success_url:session.url})
-    
+    res.json({ success: true, success_url: session.url })
+
   } catch (error) {
-    res.json({success:false,message:error.message})
+    res.json({ success: false, message: error.message })
     console.log(error.message)
   }
 }
- 
-const verifyPayment = async (req,res) =>{
-  try {
-    const {appointId,success}  = req.body
 
-    if(!appointId){
-      return res.status(400).json({success:false,message:"Missing Appointment Id"})
+const verifyPayment = async (req, res) => {
+  try {
+    const { appointId, success } = req.body
+
+    if (!appointId) {
+      return res.status(400).json({ success: false, message: "Missing Appointment Id" })
     }
 
     const appoint = await appointmentModel.findById(appointId)
-    if(!appoint){
-      return res.status(404).json({success:false,message:"Transaction not found"})
+    if (!appoint) {
+      return res.status(404).json({ success: false, message: "Transaction not found" })
     }
-    const userdata  = await userModel.findById(appoint.userId)
-    if(!userdata){
-      return res.status(404).json({success:false,message:"User not found"})
+    const userdata = await userModel.findById(appoint.userId)
+    if (!userdata) {
+      return res.status(404).json({ success: false, message: "User not found" })
     }
 
-    if(success){
+    if (success) {
       appoint.payment = true;
       await appoint.save();
 
-      return res.status(200).json({success:true,message:"payment verified successfully"})
+      return res.status(200).json({ success: true, message: "payment verified successfully" })
     }
-    return res.status(400).json({success:true,message:"payment not completed"})
-    
+    return res.status(400).json({ success: true, message: "payment not completed" })
+
   } catch (error) {
-    res.json({success:false,message:error.message})
+    res.json({ success: false, message: error.message })
     console.log(error.message)
   }
 }
 
 export {
-  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment,checkSlotAvailability,paymentStripe ,verifyPayment
+  requestOTP, loginUser, verifyOTPandRegister, requestForgetPasswordOTP, resetPassword, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment, checkSlotAvailability, paymentStripe, verifyPayment
 };
